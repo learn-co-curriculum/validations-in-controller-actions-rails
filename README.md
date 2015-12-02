@@ -20,3 +20,5 @@ if valid? vs if save on new  - explain the pattern, save returns false and trigg
 if update - same with update
 
 very common pattern.
+
+<a href='https://learn.co/lessons/validations-in-controller-actions-rails' data-visibility='hidden'>View this lesson on Learn.co</a>
