@@ -1,7 +1,8 @@
 # Validations in Controller Actions
 
 Now that we know Rails automatically performs validations defined on models,
-let's use this information to easily display validation errors to the user.
+let's use this information to help users fix typos or other problems in their
+form submissions.
 
 At this point, we'll be covering step two of the following flow:
 
@@ -11,23 +12,6 @@ At this point, we'll be covering step two of the following flow:
    form.**
 3. The view displays the errors to the user.
 
-
-## A Note About Page Loads
-
-You're probably used to validations happening almost instantaneously on websites
-that you interact with on a daily basis. Every browser has a way of visually
-indicating that a page load is happening; in Chrome, for example, the circular
-refresh icon becomes an "X" (for "Stop Loading"), and reverts to refresh when
-the load is complete.
-
-A "page load" means that everything the browser was doing is thrown out, except
-for cookies that are stored between requests. When you get validation feedback
-*without* seeing a page load, that's JavaScript at work, sneakily performing
-requests in the background without throwing away the current page.
-
-We won't be using that advanced technique just yet. For now, we'll be performing
-a full page load every time a form is submitted, which means there will be no
-validation feedback for the user until they actually hit the "Submit" button.
 
 # Objectives
 
@@ -55,39 +39,68 @@ Up until this point, our `create` action has looked something like this:
 
 However, we have two problems now:
 
-1. If the post is invalid, there will be no `show` path to redirect to.
+1. If the post is invalid, there will be no `show` path to redirect to.  The
+   post was never saved to the database, so that `post_path` will result in a
+   404!
 2. If we redirect, we start a new page load, which will lose all of the
    feedback from the validations.
 
-The conventional pattern in Rails these days is to test the return value of the
-CRUD method (like `@post.create` or `@post.save`) and decide what to do based
-on that. But, for the sake of going slowly and understanding exactly what's
-going on, we're going to split things up into a few steps before implementing it
-the "easy" way:
+## A Note About Page Loads
+
+When a form is submitted, a **full page load** occurs, as if you had navigated
+to a completely new URL. This means that all of the variables set by the
+controller's `new` action (like `@post`) *disappear* and are unavailable to the
+`create` action.
+
+The browser throws everything out after each request, except for cookies.
+
+Rails throws everything out after each request, except for the `session` hash.
+
+You're probably used to validations happening almost instantaneously on websites
+that you interact with on a daily basis. When you get validation feedback
+*without* a full page load, that's JavaScript at work, sneakily performing
+requests in the background without throwing away the current page.  We won't be
+using that advanced technique just yet!
+
+Let's use `valid?` to see what's going on before deciding how to respond:
 
 ```ruby
 # app/controllers/posts_controller.rb
 
   def create
+    # Create a brand new, unsaved, not-yet-validated Post object from the form.
     @post = Post.new(post_params)
 
+    # Run the validations WITHOUT attempting to save to the database, returning
+    # true if the Post is valid, and false if it's not.
     if @post.valid?
+      # If--and only if--the post is valid, do what we usually do.
       @post.save
+      # This returns a status_code of 302, which instructs the browser to
+      # perform a NEW REQUEST! (AKA: throw @post away and let the show action
+      # worry about re-reading it from the database)
       redirect_to post_path(@post)
     else
+      # If the post is invalid, hold on to @post, because it is now full of
+      # useful error messages, and re-render the :new page, which knows how
+      # to display them alongside the user's entries.
       render :new
     end
   end
 ```
 
-You can read more about this creative use of `render` in Section 2.2.2 of the
-Rails Guide on [Layout and Rendering][layout_rendering].
+`render` can be instructed to render the templates from other actions. In the
+above code, since we want the `:new` template from the same controller, we don't
+have to specify anything except the template name.
+
+You can read more about this (and other) creative uses of `render` in Section
+2.2.2 of the Rails Guide on [Layout and Rendering][layout_rendering].
 
 [layout_rendering]: http://guides.rubyonrails.org/layouts_and_rendering.html#using-render
 
-Remember: **redirects incur a new page load**. If we were to redirect after
-validation failure, we would **lose** the instance of `@post` that has
-validation feedback in its `errors` attribute.
+Remember: **redirects incur a new page load**. When we redirect after validation
+failure, we **lose** the instance of `@post` that has feedback (messages for the
+user) in its `errors` attribute.
 
 Another way to differentiate redirects is this:
 
