@@ -1,15 +1,11 @@
 # Validations in Controller Actions
 
-Now that we know Rails automatically performs validations defined on models,
-let's use this information to help users fix typos or other problems in their
-form submissions.
+Now that we know Rails automatically performs validations defined on models, let's use this information to help users fix typos or other problems in their form submissions.
 
 At this point, we'll be covering step two of the following flow:
 
-1. User fills out the form and hits "Submit", transmitting the form data via
-   a POST request.
-2. **The controller sees that validations have failed, and re-renders the
-   form.**
+1. User fills out the form and hits "Submit", transmitting the form data via a POST request.
+2. **The controller sees that validations have failed, and re-renders the form.**
 3. The view displays the errors to the user.
 
 
@@ -39,28 +35,18 @@ Up until this point, our `create` action has looked something like this:
 
 However, we have two problems now:
 
-1. If the post is invalid, there will be no `show` path to redirect to.  The
-   post was never saved to the database, so that `post_path` will result in a
-   404!
-2. If we redirect, we start a new page load, which will lose all of the
-   feedback from the validations.
+1. If the post is invalid, there will be no `show` path to redirect to. The post was never saved to the database, so that `post_path` will result in a 404!
+2. If we redirect, we start a new page load, which will lose all of the feedback from the validations.
 
 ## A Note About Page Loads
 
-When a form is submitted, a **full page load** occurs, as if you had navigated
-to a completely new URL. This means that all of the variables set by the
-controller's `new` action (like `@post`) *disappear* and are unavailable to the
-`create` action.
+When a form is submitted, a **full page load** occurs, as if you had navigated to a completely new URL. This means that all of the variables set by the controller's `new` action (like `@post`) *disappear* and are unavailable to the `create` action.
 
 The browser throws everything out after each request, except for cookies.
 
 Rails throws everything out after each request, except for the `session` hash.
 
-You're probably used to validations happening almost instantaneously on websites
-that you interact with on a daily basis. When you get validation feedback
-*without* a full page load, that's JavaScript at work, sneakily performing
-requests in the background without throwing away the current page.  We won't be
-using that advanced technique just yet!
+You're probably used to validations happening almost instantaneously on websites that you interact with on a daily basis. When you get validation feedback *without* a full page load, that's JavaScript at work, sneakily performing requests in the background without throwing away the current page. We won't be using that advanced technique just yet!
 
 Let's use `valid?` to see what's going on before deciding how to respond:
 
@@ -89,28 +75,22 @@ Let's use `valid?` to see what's going on before deciding how to respond:
   end
 ```
 
-`render` can be instructed to render the templates from other actions. In the
-above code, since we want the `:new` template from the same controller, we don't
-have to specify anything except the template name.
+`render` can be instructed to render the templates from other actions. In the above code, since we want the `:new` template from the same controller, we don't have to specify anything except the template name.
 
-You can read more about this (and other) creative uses of `render` in Section
-2.2.2 of the Rails Guide on [Layout and Rendering][layout_rendering].
+You can read more about this (and other) creative uses of `render` in Section 2.2.2 of the Rails Guide on [Layout and Rendering][layout_rendering].
 
 [layout_rendering]: http://guides.rubyonrails.org/layouts_and_rendering.html#using-render
 
-Remember: **redirects incur a new page load**. When we redirect after validation
-failure, we **lose** the instance of `@post` that has feedback (messages for the
-user) in its `errors` attribute.
+Remember: **redirects incur a new page load**. When we redirect after validation failure, we **lose** the instance of `@post` that has feedback (messages for the user) in its `errors` attribute.
 
 Another way to differentiate redirects is this:
 
-- If you hit Refresh after a redirect/page load, your browser resubmits the
-  `GET` request without complaint.
+- If you hit Refresh after a redirect/page load, your browser resubmits the `GET` request without complaint.
 
-- If you hit Refresh after rendering on a form submit, your browser gives you a
-  popup to confirm that you want to resubmit form data with the `POST` request.
+- If you hit Refresh after rendering on a form submit, your browser gives you a popup to confirm that you want to resubmit form data with the `POST` request.
 
-In the next lessons, we'll learn how to use the error information in
-`@post.errors` to display feedback to the user through our view.
+In the next lessons, we'll learn how to use the error information in `@post.errors` to display feedback to the user through our view.
 
 <p data-visibility='hidden'>View <a href='https://learn.co/lessons/validations-in-controller-actions-rails' title='Validations in Controller Actions'>Validations in Controller Actions</a> on Learn.co and start learning to code for free.</p>
+
+<p class='util--hide'>View <a href='https://learn.co/lessons/validations-in-controller-actions-rails'>Validations in Controller Actions</a> on Learn.co and start learning to code for free.</p>
