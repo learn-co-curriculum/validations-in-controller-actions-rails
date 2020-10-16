@@ -90,5 +90,3 @@ Another way to differentiate redirects is this:
 - If you hit Refresh after rendering on a form submit, your browser gives you a popup to confirm that you want to resubmit form data with the `POST` request.
 
 In the next lessons, we'll learn how to use the error information in `@post.errors` to display feedback to the user through our view.
-
-<p data-visibility='hidden'>View <a href='https://learn.co/lessons/validations-in-controller-actions-rails' title='Validations in Controller Actions'>Validations in Controller Actions</a> on Learn.co and start learning to code for free.</p>
