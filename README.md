@@ -9,7 +9,7 @@ At this point, we'll be covering step two of the following flow:
 3. The view displays the errors to the user.
 
 
-# Objectives
+## Objectives
 
 After this lesson, you'll be able to...
 
@@ -19,7 +19,7 @@ After this lesson, you'll be able to...
 - Validate a create action
 - Validate an update action
 
-# Manually Checking Validation
+## Manually Checking Validation
 
 Up until this point, our `create` action has looked something like this:
 
@@ -38,7 +38,7 @@ However, we have two problems now:
 1. If the post is invalid, there will be no `show` path to redirect to. The post was never saved to the database, so that `post_path` will result in a 404!
 2. If we redirect, we start a new page load, which will lose all of the feedback from the validations.
 
-## A Note About Page Loads
+### A Note About Page Loads
 
 When a form is submitted, a **full page load** occurs, as if you had navigated to a completely new URL. This means that all of the variables set by the controller's `new` action (like `@post`) *disappear* and are unavailable to the `create` action.
 
